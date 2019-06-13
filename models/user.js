@@ -9,6 +9,7 @@ module.exports = mongoose.model('User',
         "birthday": String,
         "phone": String,
         "email": String,
+        "head": String,
         "permissions": Array
     })
 );
