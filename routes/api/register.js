@@ -3,7 +3,7 @@ var router = express.Router();
 let User = require('../../models/user.js')
 let monent = require('moment')
 
-router.post('/', function (req, res, next) {
+router.post('/', (req, res, next) => {
     let user = req.body.user;
     User.findOne({ name: user.name }, (err, doc) => {
         if (err) {

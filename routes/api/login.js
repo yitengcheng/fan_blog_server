@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 let User = require('../../models/user.js')
 
-router.post('/', function (req, res, next) {
+router.post('/', (req, res, next) => {
     let name = req.body.name,
         password = req.body.password;
     User.findOne({ name }, (err, user) => {

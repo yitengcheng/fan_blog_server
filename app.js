@@ -4,10 +4,22 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var ejs = require('ejs');
+var multer = require('multer')
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({ storage: storage });
+
 
 var apiRouter = require('./routes/index');
 
 var app = express();
+app.use(upload.single('image'));
 let mongoose = require('mongoose');
 // 连接数据库
 mongoose.connect('mongodb://127.0.0.1:27017/spider');
@@ -31,6 +43,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.post('/api/upload', (req, res) => {
+    res.json({
+        success: true,
+        url: '/uploads/' + req.file.originalname
+    })
+});
 
 app.use('/api', apiRouter);
 
