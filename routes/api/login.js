@@ -5,14 +5,16 @@ let User = require('../../models/user.js')
 router.post('/', (req, res, next) => {
     let name = req.body.name,
         password = req.body.password;
-    User.findOne({ name }, (err, user) => {
+    User.findOne({ name }, (err, doc) => {
         if (err) {
             res.json({
                 success: false,
                 msg: err.message
             });
         } else {
-            if (user && password === user.password) {
+            if (doc && password === doc.password) {
+                let user = doc.toObject();
+                delete user.password;
                 res.json({
                     success: true,
                     user
@@ -25,7 +27,6 @@ router.post('/', (req, res, next) => {
             }
         }
     })
-
 });
 
 module.exports = router;

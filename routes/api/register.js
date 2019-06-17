@@ -27,9 +27,11 @@ router.post('/', (req, res, next) => {
                             msg: err1.message
                         });
                     } else {
+                        let user = doc1.toObject;
+                        delete user['password'];
                         res.json({
                             success: true,
-                            user: doc1
+                            user
                         })
                     }
                 })
