@@ -6,11 +6,14 @@ const login = require("./api/login.js");
 const userUpdate = require("./api/userUpdate.js");
 const modifyPassword = require("./api/modifyPassword.js");
 const getWeaths = require("./api/getWeaths.js");
+const getknowledge = require("./api/getknowledge.js");
 
 router.use("/register", register);
 router.use("/login", login);
 router.use("/userUpdate", userUpdate);
 router.use("/getWeaths", getWeaths);
+router.use("/modifyPassword", modifyPassword);
+router.use("/getknowledge", getknowledge);
 
 
 module.exports = router;

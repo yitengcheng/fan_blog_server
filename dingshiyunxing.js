@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
 var schedule = require('node-schedule');
-var http = require('http');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/spider', { useNewUrlParser: true });
 let moment = require('moment');
+var https = require('https');
+var qs = require('querystring');
+var fs = require('fs');
+var getJson = require('./utils/getJson.js');
 
 let Weath = mongoose.model('weath',
     new mongoose.Schema({
@@ -15,41 +18,70 @@ let Weath = mongoose.model('weath',
     })
 );
 
-function scheduleCronstyle() {
-    schedule.scheduleJob('1 1 1 * * *', () => {
-        getCityData('http://www.weather.com.cn/data/cityinfo/101260101.html').then((data) => {
-            new Weath({
-                day: moment().format('MM-DD'),
-                weather: data.weatherinfo.weather,
-                minTemp: data.weatherinfo.temp1,
-                maxTemp: data.weatherinfo.temp2,
-            }).save((err, doc) => {
-                if (err) {
-                    console.log(err.message);
-                }
-            });
-        });
-    });
+const weathMap = {
+    'CLEAR_DAY': '晴（白天）',
+    'CLEAR_NIGHT': '晴（夜间）',
+    'PARTLY_CLOUDY_DAY': '多云（白天）',
+    'PARTLY_CLOUDY_NIGHT': '多云（夜间）',
+    'CLOUDY': '阴',
+    'WIND': '大风',
+    'HAZE': '雾霾',
+    'RAIN': '雨',
+    'SNOW': '雪',
 }
-
-function getCityData(url) {
-    var pm = new Promise((resolve, reject) => {
-        http.get(url, function (res) {//通过上面传过来的url来获取该天气信息的数据
-            var jsonData = '';
-
-            res.on("data", function (data) {
-                jsonData += data.toString('utf8');//保存天气信息的数据
-            })
-            res.on("end", function () {
-                jsonData = JSON.parse(jsonData);//因为获取到的天气信息数据是JSON格式的，通过JSON.parse函数进行解析，得到一个对象
-                resolve(jsonData);
-            }).on('error', function (e) {
-                reject(e)
+function scheduleCronstyle() {
+    schedule.scheduleJob('10 59 * * * *', () => {
+        getJson('https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/106.6301,26.6476/daily.json?dailysteps=1').then((data) => {
+            let { result } = data;
+            let { daily } = result;
+            let { temperature, skycon } = daily;
+            temperature.forEach((item, index) => {
+                Weath.findOne({ day: moment(item.date).format('MM-DD') }, (err, doc) => {
+                    if (err) {
+                        console.log(err.message);
+                    } else {
+                        if (doc) {
+                            doc.maxTemp = item.max;
+                            doc.minTemp = item.min;
+                            doc.weather = weathMap[skycon[index]['value']];
+                            doc.save((err1, doc) => {
+                                if (err1) {
+                                    console.log(err1.message);
+                                }
+                            });
+                        } else {
+                            new Weath({
+                                day: moment(item.date).format('MM-DD'),
+                                maxTemp: item.max,
+                                minTemp: item.min,
+                                weather: weathMap[skycon[index]['value']]
+                            }).save((err1, doc) => {
+                                if (err1) {
+                                    console.log(err1.message);
+                                }
+                            });
+                        }
+                    }
+                });
             });
         });
-    });
+        const param = qs.stringify({
+            'grant_type': 'client_credentials',
+            'client_id': 'Viaqd5VoNYD0FzLPCXH5Au6Y',
+            'client_secret': 'MK0xtYGFAuKuBF1cQKXkP4TFwW18yH2k'
+        });
 
-    return pm;
+        https.get(
+            {
+                hostname: 'aip.baidubce.com',
+                path: '/oauth/2.0/token?' + param,
+                agent: false
+            },
+            (res) => {
+                res.pipe(fs.createWriteStream('./baidu-token.json'));
+            }
+        );
+    });
 }
 
 scheduleCronstyle();
