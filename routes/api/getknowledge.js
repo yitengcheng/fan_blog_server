@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
-var https = require('https');
+var postJson = require('../../utils/postJson.js');
 
 router.post('/', (req, res, next) => {
     let searchText = req.body.searchText;
-    let result = res;
     fs.readFile('baidu-token.json', 'utf-8', (err, token) => {
         if (err) {
             res.json({
@@ -23,17 +22,12 @@ router.post('/', (req, res, next) => {
                     'Content-Type': 'application/json'
                 }
             };
-            let httpsPost = https.request(options, function (res) {
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    result.json({
-                        success: true,
-                        data: chunk
-                    })
-                });
+            postJson(options, content).then(data => {
+                res.json({
+                    success: true,
+                    data: JSON.parse(data)
+                })
             });
-            httpsPost.write(content)
-            httpsPost.end();
         }
     });
 });
