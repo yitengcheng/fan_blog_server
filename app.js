@@ -21,6 +21,7 @@ var apiRouter = require('./routes/index');
 var app = express();
 app.use(upload.single('image'));
 let mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 // 连接数据库
 mongoose.connect('mongodb://127.0.0.1:27017/spider', { useNewUrlParser: true });
 mongoose.connection.on('connected', () => {
