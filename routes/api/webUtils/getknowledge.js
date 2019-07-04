@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
-var postJson = require('../../utils/postJson.js');
+var postJson = require('../../../utils/postJson.js');
 
 router.post('/', (req, res, next) => {
     let searchText = req.body.searchText;

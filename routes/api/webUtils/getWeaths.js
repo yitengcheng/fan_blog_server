@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-let Weath = require('../../models/weath.js');
+let Weath = require('../../../models/weath.js');
 
 router.post('/', (req, res, next) => {
     Weath.find((err, doc) => {

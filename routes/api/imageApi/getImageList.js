@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
-let User = require('../../models/user.js');
-let Image = require('../../models/image.js');
+let User = require('../../../models/user.js');
+let Image = require('../../../models/image.js');
 let _ = require('lodash');
 
 router.post('/', async (req, res, next) => {
