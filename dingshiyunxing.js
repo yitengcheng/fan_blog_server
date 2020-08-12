@@ -41,7 +41,7 @@ const weathMap = {
     'SNOW': '雪',
 }
 function scheduleCronstyle() {
-    // schedule.scheduleJob('10 59 * * * *', () => {
+    schedule.scheduleJob('10 59 * * * *', () => {
         getJson('https://api.caiyunapp.com/v2.5/dKtU9oM9cf9VxecG/106.6301,26.6476/daily.json?dailysteps=1').then((data) => {
             let { result } = data;
             let { daily } = result;
@@ -77,23 +77,23 @@ function scheduleCronstyle() {
                 });
             });
         });
-    //     const param = qs.stringify({
-    //         'grant_type': 'client_credentials',
-    //         'client_id': 'Viaqd5VoNYD0FzLPCXH5Au6Y',
-    //         'client_secret': 'MK0xtYGFAuKuBF1cQKXkP4TFwW18yH2k'
-    //     });
+        const param = qs.stringify({
+            'grant_type': 'client_credentials',
+            'client_id': 'Viaqd5VoNYD0FzLPCXH5Au6Y',
+            'client_secret': 'MK0xtYGFAuKuBF1cQKXkP4TFwW18yH2k'
+        });
 
-    //     https.get(
-    //         {
-    //             hostname: 'aip.baidubce.com',
-    //             path: '/oauth/2.0/token?' + param,
-    //             agent: false
-    //         },
-    //         (res) => {
-    //             res.pipe(fs.createWriteStream('./baidu-token.json'));
-    //         }
-    //     );
-    // });
+        https.get(
+            {
+                hostname: 'aip.baidubce.com',
+                path: '/oauth/2.0/token?' + param,
+                agent: false
+            },
+            (res) => {
+                res.pipe(fs.createWriteStream('./baidu-token.json'));
+            }
+        );
+    });
 }
 
 scheduleCronstyle();
