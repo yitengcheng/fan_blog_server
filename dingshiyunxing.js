@@ -31,7 +31,7 @@ const weathMap = {
 }
 function scheduleCronstyle() {
     schedule.scheduleJob('10 59 * * * *', () => {
-        getJson('https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/106.6301,26.6476/daily.json?dailysteps=1').then((data) => {
+        getJson('https://api.caiyunapp.com/v2/dKtU9oM9cf9VxecG/106.6301,26.6476/daily.json?dailysteps=1').then((data) => {
             let { result } = data;
             let { daily } = result;
             let { temperature, skycon } = daily;
